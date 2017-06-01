@@ -64,8 +64,13 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-   config.vm.provision "shell", inline: <<-SHELL
+	
+	config.vm.provision "file", source: "c:/vagrantubuntu/aws.pem", destination: "~/.ssh/aws.pem"
+ 
+ 	config.vm.provision "shell", inline: <<-SHELL
+   
     		#installing java
+
 
     #apt-get -y update
     #apt-get -y upgrade
@@ -75,6 +80,8 @@ Vagrant.configure("2") do |config|
     echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
     apt-get -y install oracle-java8-installer
     update-java-alternatives -s java-8-oracle
+			#installing nginx
+	apt-get -y install nginx
 
 			#installing mysql
 
@@ -89,10 +96,26 @@ Vagrant.configure("2") do |config|
 
 			#installing confluence
 	sudo /usr/sbin/useradd --create-home --comment "Account for running Confluence" --shell /bin/bash confluence
-	#mkdir -p "$pwd/tmp"
-	#cd "$pwd/tmp"
+	cd ~
+	mkdir -p tmp
+	cd tmp
 
-#	wget http://www.atlassian.com/software/confluence/downloads/binary/atlassian-confluence-6.2.1-x64.bin
+	#wget https://downloads.atlassian.com/software/confluence/downloads/atlassian-confluence-6.2.1.tar.gz
+	sudo mkdir /usr/local/confluence
+	#sudo tar -xzf atlassian-confluence-6.2.1.tar.gz -C /usr/local/confluence
+	#sudo su confluence
+	cd /usr/local/confluence
+	#sudo tar -xf atlassian-confluence-6.2.1.tar
+	sudo chown -R confluence /usr/local/confluence
+ 	sudo chmod -R u=rwx,go-rwx /usr/local/confluence
+	sudo mkdir /var/confluence-home
+	sudo chown -R confluence  /var/confluence-home
+ 	sudo chmod -R u=rwx,go-rwx  /var/confluence-home
+	./start-confluence.sh
+
+
+
+
 #	chmod 755 atlassian-confluence-6.2.1-x64.bin 
 #	sudo ./atlassian-confluence-6.2.1-x64.bin
 #	o
