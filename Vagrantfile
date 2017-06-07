@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+   #config.vm.network "forwarded_port", guest: 8090, host: 8090
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -43,13 +43,13 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
+  		 config.vm.provider "virtualbox" do |vb|
   #   # Display the VirtualBox GUI when booting the machine
   #   vb.gui = true
   #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
+  #   # Customize the amount of memory on the VM:	
+		vb.memory = "3072"
+ 		 #end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
@@ -64,16 +64,21 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-	
-	config.vm.provision "file", source: "c:/vagrantubuntu/aws.pem", destination: "~/.ssh/aws.pem"
- 
- 	config.vm.provision "shell", inline: <<-SHELL
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get install -y apache2
+
+	config.vm.provision "file", source: "c:/exam3/aws.pem", destination: "~/.ssh/aws.pem"
+	config.vm.provision "file", source: "c:/exam3/atlassian-confluence-6.2.1.tar.gz", destination: "~/atlassian-confluence-6.2.1.tar.gz"
+ 	config.vm.provision "file", source: "c:/exam3/mysql-connector-java-5.1.42.tar.gz", destination: "~/mysql-connector-java-5.1.42.tar.gz"
+ 	
+	config.vm.provision "shell", inline: <<-SHELL
    
     		#installing java
 
 
-    #apt-get -y update
-    #apt-get -y upgrade
+    apt-get -y update
+    apt-get -y upgrade
     apt-get -y install software-properties-common htop
     add-apt-repository ppa:webupd8team/java
     apt-get -y update
@@ -84,10 +89,14 @@ Vagrant.configure("2") do |config|
 	apt-get -y install nginx
 
 			#installing mysql
+	sudo add-apt-repository 
+    	sudo apt-get update
+    	
 
 	debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
 	debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
-	apt-get install -y mysql-server 
+	sudo apt-get install -y mysql-server 
+	#sudo apt-get -y install mysql-server-5.6
 
 			#creating DB
 
@@ -99,40 +108,30 @@ Vagrant.configure("2") do |config|
 	cd ~
 	mkdir -p tmp
 	cd tmp
+	
 
-	#wget https://downloads.atlassian.com/software/confluence/downloads/atlassian-confluence-6.2.1.tar.gz
+	wget https://downloads.atlassian.com/software/confluence/downloads/atlassian-confluence-6.2.1.tar.gz
+	 
 	sudo mkdir /usr/local/confluence
-	#sudo tar -xzf atlassian-confluence-6.2.1.tar.gz -C /usr/local/confluence
-	#sudo su confluence
-	cd /usr/local/confluence
-	#sudo tar -xf atlassian-confluence-6.2.1.tar
+	sudo tar -xzf atlassian-confluence-6.2.1.tar.gz -C /usr/local/confluence
+	sudo tar -xzf ~/mysql-connector-java-5.1.42.tar.gz -C /usr/local/confluence/atlassian-confluence-6.2.1/confluence/WEB-INF/lib
+	sudo cp /usr/local/confluence/atlassian-confluence-6.2.1/confluence/WEB-INF/lib/mysql-connector-java-5.1.42/mysql-connector-java-5.1.42-bin.jar /usr/local/confluence/atlassian-confluence-6.2.1/confluence/WEB-INF/lib
+	
+	
+	sudo tar -xf atlassian-confluence-6.2.1.tar
 	sudo chown -R confluence /usr/local/confluence
  	sudo chmod -R u=rwx,go-rwx /usr/local/confluence
 	sudo mkdir /var/confluence-home
 	sudo chown -R confluence  /var/confluence-home
  	sudo chmod -R u=rwx,go-rwx  /var/confluence-home
+	sudo su confluence
+	cd /usr/local/confluence/atlassian-confluence-6.2.1/bin
 	./start-confluence.sh
-
-
-
-
-#	chmod 755 atlassian-confluence-6.2.1-x64.bin 
-#	sudo ./atlassian-confluence-6.2.1-x64.bin
-#	o
-#	2
-#	/opt/atlassian/confluence
-#	/var/atlassian/application-data/confluence
-#	1
-#	y
-
-
-
+	#./stop-confluence.sh
 
   SHELL
-
-
-
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+end
 end
